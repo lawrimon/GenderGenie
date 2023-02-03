@@ -9,6 +9,8 @@
 .big-text-field {
   width: 800px;
   height: 250px;
+  padding: '40px';
+  position: relative;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -26,6 +28,7 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
+  
 }
 
 .App-link {

@@ -1,4 +1,5 @@
 from spacy.tokens import Token
+import re
 
 # Add 'gender' extension to Token with default value of None
 Token.set_extension('gender', default=None)
@@ -36,10 +37,24 @@ def check_dict(string, my_dict):
         array = split_dict(string, my_dict)
         star_sg, star_pl = second_check(string)
         array.append(star_sg)
-        array.append(star_pl)
+        #array.append(star_pl)
         return {string:array}
     else:
         return None
+
+def replace_words(file_path, word_list):
+    with open(file_path, 'r') as file:
+        content = file.read()
+
+    for word in word_list:
+        content = content.replace(word, f'//{word}//')
+
+    with open(file_path, 'w') as file:
+        file.write(content)
+
+
+
+
 
 def second_check(word):
     """
@@ -49,6 +64,10 @@ def second_check(word):
     word_pl = replace_token_pl(word)
     return word_sg, word_pl
 
+
+def filter_non_letters(word):
+  return re.sub(r'[^a-zA-ZüäöÜÄÖ-]+', '', word)
+
 def replace_token_sg(word):
     """
     Given a token text, check if it ends with "er", "en", or "in".
@@ -56,10 +75,8 @@ def replace_token_sg(word):
     If it does not, return None.
     """
     if word.endswith("er"):
-        word= word + "*in"
+        word= " "+ word + "*in"
     elif word.endswith("en"):
-        word = word[:-2] + "*in"
-    elif word.endswith("in"):
         word = word[:-2] + "*in"
     else:
         return None
@@ -76,8 +93,6 @@ def replace_token_pl(word):
         word = word + "*in"
     elif word.endswith("en"):
         word = word[:-2] + "*in"
-    elif word.endswith("in"):
-        word = word[:-2] + "*in"
     else:
         return None
     return word
@@ -86,6 +101,7 @@ def mainfunction(text):
     gender_dict = init_dict()
     result = []
     for token in text.split():
+        token = filter_non_letters(token)
         dict_element = check_dict(token, gender_dict)
         if dict_element:
             result.append(dict_element)
