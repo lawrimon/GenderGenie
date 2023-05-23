@@ -1,12 +1,11 @@
-from flask import Flask, jsonify
-from flask import request
+from flask import Flask, jsonify, request
 from flask_cors import CORS
-from gender_algorithm import postSuggestion
-from gender_algorithm import mainfunction
-
+from gender_algorithm import GenderInator
 
 app = Flask(__name__)
 CORS(app)
+
+gender_inator = GenderInator()
 
 @app.route('/')
 def home():
@@ -16,16 +15,15 @@ def home():
 def process():
     text = request.json['text']
     # Do something with the text
-    returned_text = mainfunction(text)
+    returned_text = gender_inator.main_function(text)
     return jsonify({'message': returned_text})
 
 @app.route('/postSuggestion', methods=['POST'])
 def suggestion():
     text = request.get_json()
     print(text)
-    returned_text = postSuggestion(text)
-    return jsonify({'message': returned_text})
-
+    gender_inator.post_suggestion(text)
+    return jsonify({'message': 'Suggestion received'})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000,debug=True)
+    app.run(host='0.0.0.0', port=8000, debug=True)
