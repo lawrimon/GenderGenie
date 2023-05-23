@@ -47,7 +47,7 @@ const App = () => {
 
   const handleSubmit = () => {
     setShowContainer(true);
-    fetch('http://141.31.86.15:8000//postText', {
+    fetch('http://192.168.0.135:8000//postText', {
       method: 'POST',
       body: JSON.stringify({ "text": text }),
       headers: { 'Content-Type': 'application/json' },
@@ -80,6 +80,27 @@ const App = () => {
     element.download = "Output.txt";
     document.body.appendChild(element);
     element.click();
+  }
+
+  function handleFeedback(){
+    console.log(selectedKeyword)
+    // Implement Logic to close the popup
+    setShowPopup(false);
+    fetch('http://192.168.0.135:8000//postFeedback', {
+      method: 'POST',
+      body: JSON.stringify({ "word": selectedKeyword }),
+      headers: { 'Content-Type': 'application/json' },
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.message) {
+          console.log(data.message)
+        }})
+      
+      removeHighlightWord(selectedKeyword)
+      console.log(highlightWords)
+      setText(prevText => prevText.replace(selectedKeyword, selectedKeyword))
+       
   }
 
   function extractKeywords(daten) {
@@ -128,6 +149,10 @@ const App = () => {
     // Hier Logik einbauen um die Wörter im Text zu ersetzen
   };
 
+  const removeHighlightWord = (wordToRemove) => {
+    const updatedHighlightWords = keyvalues.filter((word) => word !== wordToRemove);
+    setKeyValues(updatedHighlightWords);
+  }
 
   const highlight = (text, words, handleClick) => {
     let result = [text];
@@ -267,6 +292,7 @@ const App = () => {
                     </span>
                   ))}
                 </div>
+                <button class="red-button" onClick={() => handleFeedback()} >X</button>
               </div>
             )}
 

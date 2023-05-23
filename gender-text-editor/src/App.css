@@ -177,3 +177,31 @@ button:hover {
 }
 
 
+
+.red-button {
+  margin-top: 20px;
+  width: 40px;
+  height: 30px;
+  padding: 0;
+  background-color: lightcoral;
+  overflow: visible;
+}
+
+.red-button:hover {
+  background-color: red;
+}
+
+.red-button:before, .red-button:after {
+  width: 100%;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.red-button:before {
+  transform: translateY(-50%) rotate(45deg) translate(-35%, -35%);
+}
+
+.red-button:after {
+  transform: translateY(-50%) rotate(-45deg) translate(-35%, 35%);
+}

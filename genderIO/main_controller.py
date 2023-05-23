@@ -2,6 +2,7 @@ from flask import Flask, jsonify
 from flask import request
 from flask_cors import CORS
 from gender_algorithm import postSuggestion
+from gender_algorithm import postFeedback
 from gender_algorithm import mainfunction
 
 
@@ -25,6 +26,16 @@ def suggestion():
     print(text)
     returned_text = postSuggestion(text)
     return jsonify({'message': returned_text})
+
+
+@app.route('/postFeedback', methods=['POST'])
+def feedback():
+    text = request.get_json()
+    print(text)
+    returned_text = postFeedback(text)
+    return jsonify({'message': returned_text})
+
+
 
 
 if __name__ == '__main__':

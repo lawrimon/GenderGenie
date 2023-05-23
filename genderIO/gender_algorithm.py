@@ -79,11 +79,14 @@ def find_word_position_in_string(string, word):
 def find_word_database(word, collection):
     document = collection.find_one({"word": word})
     # Check if the document was found
-    if document:
-        definition = document["definition"]
-        return {word : definition}
-    else:
-        pass
+    try:
+        if document:
+            definition = document["definition"]
+            return {word : definition}
+        else:
+            pass
+    except:
+        return document
 
 def second_check(word):
     """
@@ -154,6 +157,7 @@ def mainfunction(text):
     client = MongoClient("mongodb+srv://admin:admin@genderinator.psfvydj.mongodb.net/?retryWrites=true&w=majority")
     db = client["GenderInator"]
     collection = db["GenderRegeln"]
+    check_collection = db["Feedback"]
 
     #gender_dict = init_dict()
     result = []
@@ -162,7 +166,14 @@ def mainfunction(text):
         token = filter_non_letters(token)
         #find_word_position_in_string(text, token)
         #test_person(token)
-        dict_element = check_database(token, collection)
+        lol = find_word_database(token, check_collection)
+        if(lol is not None):
+            print("IM IFFFFF")
+            continue
+
+        else:
+            dict_element = check_database(token, collection)
+
         if dict_element:
             result.append(dict_element)
         else:
@@ -184,7 +195,6 @@ def upload_excel(dict_array):
 
     # Schritt 3: Konvertieren und speichern Sie die Daten
     #collection.insert_many(documents)
-
 
 def detect_person(text):
     doc = nlp(text)
@@ -210,7 +220,6 @@ def detect_person(text):
             return True
     return False
 
-
 def test_person(word):
     if detect_person(word):
         print("The text refers to a person")
@@ -223,3 +232,11 @@ def postSuggestion(text):
     collection = db["GenderSuggestions"]
     print("this the text",text)
     #collection.insert_one(text)
+
+
+def postFeedback(text):
+    client = MongoClient("mongodb+srv://admin:admin@genderinator.psfvydj.mongodb.net/?retryWrites=true&w=majority")
+    db = client["GenderInator"]
+    collection = db["Feedback"]
+    print("this the text",text)
+    collection.insert_one(text)
