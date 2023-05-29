@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import './App.css';
 import genderLogo from './gender_logo.png';
+import LoadingBar from './Loading';
+
 
 
 const App = () => {
@@ -286,8 +288,9 @@ const App = () => {
               <button onClick={suggestionTextfield}>Submit</button>
             </div>
           </div>
-
-        </div>
+          <h2>Instant conversion box</h2>
+        <LoadingBar />
+      </div>
       </header>
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50px', backgroundColor: '#f2f2f2', padding: "10px" }}>
         <p style={{ margin: 0, fontSize: '12px' }}>
