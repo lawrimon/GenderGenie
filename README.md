@@ -1,32 +1,64 @@
-# Studienarbeit_Gender_Programm
+# GenderGenie
 
-I understand, you want to analyze a German text and then determine the gender of the people mentioned in it, and then adjust the word accordingly, for example, making "Arbeiter" to "Arbeiter*innen".
+**Author:** Laurin Tarta
 
-Here's an example of how you could do this using Python:
+## Description
 
-Start by installing the necessary libraries such as spaCy, which is a library for advanced natural language processing in Python. You can install it by running pip install spacy in your command prompt.
-Next, you'll need to download the German language model for spaCy using the following command: python -m spacy download de_core_news_sm
-Once you have the libraries and the language model installed, you can start by loading the German language model in your Python script using the following code:
-Copy code
-import spacy
-nlp = spacy.load("de_core_news_sm")
-Next, you'll need to define the text you want to analyze. You can either define it as a string variable or read it from a file:
-Copy code
-text = "Das ist ein Beispieltext mit verschiedenen Personen. Der Arbeiter heißt Max Mustermann und die Arbeiterin heißt Lisa Musterfrau."
-Now, you can use spaCy's nlp function to process the text and create a Doc object that contains all the information about the text's structure, entities and more:
-Copy code
-doc = nlp(text)
-Next, you can iterate through the Doc object to extract all the named entities that are persons and determine their gender, then you can replace the word by it's gender-corrected version:
-Copy code
-for token in doc:
-    if token.text in ["Arbeiter", "Arbeiterin"]:
-        if token.text == "Arbeiter":
-            if token.gender == "MALE":
-                token.text = "Arbeiter*innen"
-        elif token.text == "Arbeiterin":
-            token.text = "Arbeiter*innen"
+GenderGenie is a web application that utilizes natural language processing techniques to predict whether a german word is gender-neutra. It provides a simple and intuitive interface for users to input text and receive predictions based on a rule based AI
 
-print(doc.text)
-This code first loops through all the words in the text, and checks if the word is "Arbeiter" or "Arbeiterin", then based on the gender of the word, it replaces the word with "Arbeiter*innen", then it prints the text after modification.
+The project consists of a Flask backend, a MongoDB database for storing name data, and a ReactJS frontend for the user interface.
 
-Please keep in mind that this is just an example and it's possible that it may not work as expected for your specific use case, also the grammatical tags may vary
+## Technologies Used
+
+- Flask: A micro web framework for the backend development.
+- MongoDB: A NoSQL database for storing and retrieving name data.
+- ReactJS: A JavaScript library for building user interfaces.
+
+## Features
+
+- Predict gender based on a given name.
+- User-friendly interface for input and display of name predictions.
+- Database integration for storing and retrieving name data.
+- Responsive design for seamless user experience across different devices.
+
+## Installation
+
+1. Clone the repository:
+git clone https://github.com/your-username/GenderGenie.git
+
+
+2. Set up the backend:
+- Navigate to the backend directory:
+  ```
+  cd GenderGenie/backend
+  ```
+- Install the required dependencies:
+  ```
+  pip install -r requirements.txt
+  ```
+- Start the Flask server:
+  ```
+  flask run
+  ```
+
+3. Set up the frontend:
+- Navigate to the frontend directory:
+  ```
+  cd GenderGenie/frontend
+  ```
+- Install the required dependencies:
+  ```
+  npm install
+  ```
+- Start the React development server:
+  ```
+  npm start
+  ```
+
+4. Access the application in your web browser at http://localhost:3000.
+
+## Usage
+
+1. Enter a name in the provided input field.
+2. Click the "Predict" button to generate the gender prediction.
+3. The result will be displayed on the screen, indicating the predicted gender for the given name.
