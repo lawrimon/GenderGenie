@@ -16,15 +16,15 @@ The project consists of a Flask backend, a MongoDB database for storing name dat
 
 ## Features
 
-- Predict gender based on a given name.
-- User-friendly interface for input and display of name predictions.
-- Database integration for storing and retrieving name data.
+- Predict if word is gendered.
+- User-friendly interface for input and display of text predictions.
+- Database integration for storing and retrieving text data.
 - Responsive design for seamless user experience across different devices.
 
 ## Installation
 
 1. Clone the repository:
-git clone https://github.com/your-username/GenderGenie.git
+git clone https://github.com/lawrimon/GenderGenie.git
 
 
 2. Set up the backend:
