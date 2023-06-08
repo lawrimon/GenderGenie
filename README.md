@@ -59,6 +59,6 @@ git clone https://github.com/lawrimon/GenderGenie.git
 
 ## Usage
 
-1. Enter a name in the provided input field.
-2. Click the "Predict" button to generate the gender prediction.
-3. The result will be displayed on the screen, indicating the predicted gender for the given name.
+1. Enter a text in the provided input field.
+2. Click the "Submit" button to generate the gender prediction.
+3. The result will be displayed on the screen, indicating the predicted sugestions for the given text.
