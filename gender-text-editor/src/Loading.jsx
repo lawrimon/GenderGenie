@@ -1,13 +1,80 @@
 import React, { useState, useEffect } from 'react';
 import './Loading.css';
 
+
+  
+
+
 const LoadingBar = () => {
+    const [processedText, setProcessedText] = useState(false);
+    const [filename, setFilename] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+
+  let text = "";
+
+const handleUploadConversion = (event) => {
+    // prevent default behavior of form submission
+    event.preventDefault();
+
+    // access the first file in the input field
+    const file = event.target.files[0];
+
+    // create a new instance of FileReader
+    const reader = new FileReader();
+
+    // handle the load event after reading the file
+    reader.onload = (e) => {
+      // set the contents of the file as the text value
+      text = e.target.result;
+      // call the handleSubmit function
+      console.log(text, "is the text")
+    };
+
+    // start reading the file as text
+    reader.readAsText(file);
+  };
+
+const handleSubmit = () => {
+fetch('http://192.168.0.135:8000//automaticConversion', {
+    method: 'POST',
+    body: JSON.stringify({ "text": text }),
+    headers: { 'Content-Type': 'application/json' },
+})
+    .then(response => response.json())
+    .then(data => {
+    if (data) {
+        console.log(data)
+        if (data === '[]') {
+        console.log("Im IF")
+        return
+        }
+    }
+        console.log(data)
+        setFilename("processed_text.txt")
+        setProcessedText(data)
+        
+    })
+    .catch(error => {
+    console.error(error);
+    });
+};
+
+function downloadTextFile(content, filename) {
+    const element = document.createElement('a');
+    const file = new Blob([content], { type: 'text/plain' });
+  
+    element.href = URL.createObjectURL(file);
+    element.download = filename;
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+}
 
   const startConversion = () => {
     setIsLoading(true);
     setShowSuccessMessage(false);
+    handleSubmit();
 
     // Simulate a loading effect
     setTimeout(() => {
@@ -30,9 +97,17 @@ const LoadingBar = () => {
   return (
     <div className="suggestion-box">
       {!isLoading && !showSuccessMessage && (
+        <div>
+
         <div className="button">
           <button onClick={startConversion}>Start Conversion</button>
         </div>
+        <label htmlFor="conversion-input" className="apple-btn">
+        Select .txt file
+        </label>
+        <input type="file" id="conversion-input" accept=".txt" onChange={handleUploadConversion} />
+
+      </div>
       )}
       {isLoading && (
         <div className="loading-bar-container">
@@ -43,7 +118,7 @@ const LoadingBar = () => {
         <div className="conversion-success">
           <div className="success-message">CONVERSION SUCCESSFUL</div>
           <div className="button">
-            <button onClick={console.log("lol")}>Download File</button>
+            <button onClick={downloadTextFile(processedText, filename)}>Download File</button>
           </div>
         </div>
       )}

@@ -39,3 +39,6 @@
     font-weight: bold;
   }
   
+  #conversion-input{
+    display: none;
+  }

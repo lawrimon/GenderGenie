@@ -49,7 +49,7 @@ const App = () => {
 
   const handleSubmit = () => {
     setShowContainer(true);
-    fetch('http://141.31.86.15:8000//postText', {
+    fetch('http://192.168.0.135:8000//postText', {
       method: 'POST',
       body: JSON.stringify({ "text": text }),
       headers: { 'Content-Type': 'application/json' },

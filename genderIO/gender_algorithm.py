@@ -84,7 +84,7 @@ class GenderInator:
                 pass
         try:
             if token.pos_ == "NOUN":
-                if word.endswith("er") or word.endswith("en"):
+                if word.endswith("er"):
                     return {word: word + "*in"}
         except:
             pass
@@ -163,3 +163,47 @@ class GenderInator:
     def upload_excel(self, dict_array):
         documents = [{"word": key, "definition": value} for key, value in dict_array.items()]
         self.gender_rules_collection.insert_many(documents)
+
+    def remove_elements(self,lst, elements):
+        return [x for x in lst if x not in elements]
+
+    def instant_conversion(self, text):
+        gender_dict = self.load_gender_dictionary('gender_tabelle.xlsx')
+        result = []
+        for token in text.split():
+            token = self.filter_non_letters(token)
+            dict_element = self.check_database(token)
+            if dict_element:
+                result.append(dict_element)
+            else:
+                result_word = self.check_wordending(token)
+                if result_word is not None:
+                    result.append(result_word)
+
+            if token in gender_dict:
+                alternatives = gender_dict[token].split(';')
+                if alternatives:
+                    result.append({token: alternatives[0]})
+                else:
+                    result.append({token: None})
+
+        processed_text = text
+        itemcounter = 0
+        for item in result:
+            word = list(item.keys())[0]
+            alternative = list(item.values())[0]
+            print("This is the word", word, "This is the alternative", alternative)
+            if alternative is not None:
+                if isinstance(alternative, list):
+                    alternative = alternative[0]
+                processed_text = processed_text.replace(word, alternative)
+                itemcounter += 1
+
+            while item in result:
+                result.remove(item)
+
+        #print("This is the processed text", processed_text)
+        print("This many items have been found", itemcounter)
+
+        return processed_text
+

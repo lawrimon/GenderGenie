@@ -26,12 +26,13 @@ def suggestion():
     return jsonify({'message': 'Suggestion received'})
 
 @app.route('/automaticConversion', methods=['POST'])
-def suggestion():
+def conversion():
     text = request.get_json()
     text = request.json['text']
     # Do something with the text
-    returned_text = gender_inator.main_function(text)
-    return jsonify({returned_text})
+    returned_text = gender_inator.instant_conversion(text)
+    print(type(returned_text))
+    return jsonify(returned_text)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000, debug=True)
