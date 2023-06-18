@@ -18,6 +18,14 @@ def process():
     returned_text = gender_inator.main_function(text)
     return jsonify({'message': returned_text})
 
+@app.route('/postFeedback', methods=['POST'])
+def feedback():
+     text = request.get_json()
+     print(text)
+     returned_text = gender_inator.post_feedback(text)
+     return jsonify({'message': 'Feedback received!'})
+
+
 @app.route('/postSuggestion', methods=['POST'])
 def suggestion():
     text = request.get_json()

@@ -12,6 +12,8 @@ class GenderInator:
         self.db = self.client["GenderInator"]
         self.gender_rules_collection = self.db["GenderRegeln"]
         self.suggestions_collection = self.db["GenderSuggestions"]
+        self.feedback_collection = self.db["Feedback"]
+
 
     def load_gender_dictionary(self, file_path):
         df = pd.read_excel(file_path)
@@ -60,10 +62,24 @@ class GenderInator:
 
     def find_word_database(self, word):
         document = self.gender_rules_collection.find_one({"word": word})
-        if document:
-            definition = document["definition"]
-            return {word: definition}
-        else:
+        try:
+            if document:
+                definition = document["definition"]
+                return {word : definition}
+            else:
+                pass
+        except:
+            return document
+    
+    def find_check_database(self, word):
+        document = self.feedback_collection.find_one({"word": word})
+        try:
+            if document:
+                definition = document["definition"]
+                return definition
+            else:
+                return None
+        except:
             return None
 
     def second_check(self, word):
@@ -149,13 +165,19 @@ class GenderInator:
         result = []
         for token in text.split():
             token = self.filter_non_letters(token)
-            dict_element = self.check_database(token)
-            if dict_element:
-                result.append(dict_element)
+            check = self.find_check_database(token)
+            if(check is not None):
+                print("It is in Check")
+                continue
+
             else:
-                result_word = self.check_wordending(token)
-                if result_word is not None:
-                    result.append(result_word)
+                dict_element = self.check_database(token)
+                if dict_element:
+                    result.append(dict_element)
+                else:
+                    result_word = self.check_wordending(token)
+                    if result_word is not None:
+                        result.append(result_word)
 
         print(result)
         return result
@@ -207,3 +229,5 @@ class GenderInator:
 
         return processed_text
 
+    def post_feedback(self, text):
+        self.feedback_collection.insert_one(text)

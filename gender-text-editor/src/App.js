@@ -133,6 +133,32 @@ const App = () => {
     setKeyValues(newKeyValues);
     console.log(keyvalues);
   };
+
+  const removeHighlightWord = (wordToRemove) => {
+    const updatedHighlightWords = keyvalues.filter((word) => word !== wordToRemove);
+    setKeyValues(updatedHighlightWords);
+  }
+
+  function handleFeedback(){
+    console.log(selectedKeyword)
+    // Implement Logic to close the popup
+    setShowPopup(false);
+    fetch('http://192.168.0.135:8000//postFeedback', {
+      method: 'POST',
+      body: JSON.stringify({ "word": selectedKeyword }),
+      headers: { 'Content-Type': 'application/json' },
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.message) {
+          console.log(data.message)
+        }})
+
+      removeHighlightWord(selectedKeyword)
+      console.log(highlightWords)
+      setText(prevText => prevText.replace(selectedKeyword, selectedKeyword))
+
+  }
   
 
 
@@ -277,6 +303,8 @@ const App = () => {
         </span>
       ))}
     </div>
+    <button class="red-button" onClick={() => handleFeedback()} >X</button>
+
   </div>
 )}
 
