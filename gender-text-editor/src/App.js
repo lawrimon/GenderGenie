@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import './App.css';
 import genderLogo from './gender_logo.png';
+import LoadingBar from './Loading';
+
 
 
 const App = () => {
@@ -47,7 +49,7 @@ const App = () => {
 
   const handleSubmit = () => {
     setShowContainer(true);
-    fetch('http://141.31.86.15:8000//postText', {
+    fetch('http://192.168.0.135:8000//postText', {
       method: 'POST',
       body: JSON.stringify({ "text": text }),
       headers: { 'Content-Type': 'application/json' },
@@ -94,6 +96,17 @@ const App = () => {
     return keywords
   };
 
+  function calculatePopupTopPosition() {
+    const clickedWordRect = document.getSelection().getRangeAt(0).getBoundingClientRect();
+    return clickedWordRect.top - 150;
+  }
+  
+  function calculatePopupLeftPosition() {
+    const clickedWordRect = document.getSelection().getRangeAt(0).getBoundingClientRect();
+    return clickedWordRect.left - 180;
+  }
+  
+
   function extractValues(daten) {
     let keyValuePairs = []
     daten.forEach(obj => {
@@ -110,23 +123,17 @@ const App = () => {
   };
 
   const handleWordClick = word => {
-    console.log(word)
-    setText(prevText => prevText.replace(selectedKeyword, word))
-    //setText(prevText => prevText.replace(selectedKeyword,  (<span key={word} style={{color: 'blue', cursor: 'pointer'}}>
-    //{word}
-    //</span>).toString()));
-    //setSelectedKeyword(word);
-    console.log(text)
-    //highlight_keyword(text, word, handleWordClick, "green")
-    //const newText = highlight_keyword(text, word)
-    //setText(newText);
-    //console.log(newText)
-    let result = highlight(text, [word], handleHighlightClick)
-    console.log(result)
-    //setText(text,newText)
-    // IN text replace selected word with word!!!
-    // Hier Logik einbauen um die Wörter im Text zu ersetzen
+    console.log(word);
+    console.log(selectedKeyword);
+    setText(prevText => prevText.replace(selectedKeyword, word));
+    console.log(text);
+    setShowPopup(false);
+    let newKeyValues = keyvalues.filter(kv => kv.key !== selectedKeyword);
+    console.log(keyvalues);
+    setKeyValues(newKeyValues);
+    console.log(keyvalues);
   };
+  
 
 
   const highlight = (text, words, handleClick) => {
@@ -259,16 +266,21 @@ const App = () => {
             </div>
 
             {showPopup && (
-              <div className='Popup'>
-                <div >
-                  <b>{selectedKeyword}</b>:{selectedValue.split(",").map((word, index) => (
-                    <span key={index} onClick={() => handleWordClick(word)}>
-                      {word + ","}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
+  <div
+    className='Popup'
+    style={{ top: calculatePopupTopPosition(), left: calculatePopupLeftPosition() }}
+  >
+    <div>
+      <b>{selectedKeyword}</b>:{selectedValue.split(",").map((word, index) => (
+        <span key={index} onClick={() => handleWordClick(word)}>
+          {word + ","}
+        </span>
+      ))}
+    </div>
+  </div>
+)}
+
+
 
 
 
@@ -286,8 +298,9 @@ const App = () => {
               <button onClick={suggestionTextfield}>Submit</button>
             </div>
           </div>
-
-        </div>
+          <h2>Instant conversion box</h2>
+        <LoadingBar />
+      </div>
       </header>
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50px', backgroundColor: '#f2f2f2', padding: "10px" }}>
         <p style={{ margin: 0, fontSize: '12px' }}>

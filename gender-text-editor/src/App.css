@@ -113,18 +113,21 @@
 }
 
 .Popup {
-  position: relative;
+  position: fixed;
   margin-left: 20px;
   color: black;
   background-color: white;
   padding: 15px;
-  width: 300px;
-  height: 250px;
+  min-width: 200px; /* Set a minimum width to prevent the popup from becoming too small */
+  max-width: 400px; /* Set a maximum width to limit the popup's expansion */
+  height: auto; /* Allow the height to adjust based on content */
   border-radius: 8px;
   box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
   font-size: 20px;
   overflow: hidden;
 }
+
+
 
 
 .suggestion-box {
