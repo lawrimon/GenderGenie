@@ -24,7 +24,7 @@ const App = () => {
     console.log('Second Input:', secondInput);
     let suggestion = { firstInput: secondInput }
 
-    fetch('http://141.31.86.15:8000/postSuggestion', {
+    fetch('http://192.168.0.135:8000/postSuggestion', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -65,6 +65,8 @@ const App = () => {
           }
           let keywords = extractKeywords(data.message);
           let keyvalues = extractValues(data.message);
+          
+          keyvalues = removeDuplicates(keyvalues)
           console.log(keyvalues);
           setHighlightWords(keywords);
           setKeyValues(keyvalues);
@@ -74,6 +76,25 @@ const App = () => {
         console.error(error);
       });
   };
+
+  function removeDuplicates(list) {
+    const uniquePairs = new Set();
+  
+    const filteredList = list.filter(item => {
+      const key = Object.keys(item)[0];
+      const value = Object.values(item)[0];
+  
+      const pair = key + '-' + value;
+      if (!uniquePairs.has(pair)) {
+        uniquePairs.add(pair);
+        return true;
+      }
+      return false;
+    });
+  
+    return filteredList;
+  }
+  
 
   const downloadTxtFile = () => {
     const element = document.createElement("a");
@@ -125,14 +146,27 @@ const App = () => {
   const handleWordClick = word => {
     console.log(word);
     console.log(selectedKeyword);
-    setText(prevText => prevText.replace(selectedKeyword, word));
+    setText(prevText => {
+      let newText = prevText;
+      while (newText.includes(selectedKeyword)) {
+        newText = newText.replace(selectedKeyword, word);
+      }
+      return newText;
+    });
     console.log(text);
     setShowPopup(false);
-    let newKeyValues = keyvalues.filter(kv => kv.key !== selectedKeyword);
+    let newKeyValues = keyvalues.map(kv => {
+      if (kv.key === selectedKeyword) {
+        return { key: word, value: kv.value };
+      } else {
+        return kv;
+      }
+    });
     console.log(keyvalues);
     setKeyValues(newKeyValues);
     console.log(keyvalues);
   };
+  
 
   const removeHighlightWord = (wordToRemove) => {
     const updatedHighlightWords = keyvalues.filter((word) => word !== wordToRemove);
@@ -167,19 +201,27 @@ const App = () => {
     words.forEach(word => {
       result = result.flatMap(item => {
         if (typeof item === "string") {
-          const startIndex = item.indexOf(word.key);
-          if (startIndex >= 0) {
+          const regex = new RegExp(`\\b${word.key}\\b`, 'g');
+          const matches = item.matchAll(regex);
+  
+          let lastIndex = 0;
+          const highlightedItems = [];
+          for (const match of matches) {
+            const startIndex = match.index;
             const endIndex = startIndex + word.key.length;
-            return [
-              item.slice(0, startIndex),
-              <span key={word.key} style={{ color: 'red', cursor: 'pointer' }} onClick={() => handleClick(word.key, word.value)}>
-                {word.key}
-              </span>,
-              item.slice(endIndex)
-            ];
-          } else {
-            return [item];
+  
+            highlightedItems.push(item.slice(lastIndex, startIndex));
+            highlightedItems.push(
+              <span key={`${word.key}-${startIndex}`} style={{ color: 'red', cursor: 'pointer' }} onClick={() => handleClick(word.key, word.value)}>
+                {item.slice(startIndex, endIndex)}
+              </span>
+            );
+  
+            lastIndex = endIndex;
           }
+  
+          highlightedItems.push(item.slice(lastIndex));
+          return highlightedItems;
         } else {
           return [item];
         }
@@ -187,6 +229,7 @@ const App = () => {
     });
     return result;
   };
+  
 
   const highlight_keyword = (text, word) => {
     console.log("this text,", text)

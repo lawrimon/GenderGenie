@@ -88,16 +88,8 @@ class GenderInator:
     def check_wordending(self, word):
         doc = self.nlp(word)
         if not doc:
-            print("kein DOC")
             return None
         token = doc[0]
-        print(word)
-        if word == "Lügner":
-            print("asahduh")
-            try:
-                print(token.pos_)
-            except:
-                pass
         try:
             if token.pos_ == "NOUN":
                 if word.endswith("er"):
@@ -118,7 +110,6 @@ class GenderInator:
         return word
 
     def replace_token_pl(self, word):
-        print(type(word))
         if word.endswith("er"):
             word = word + "*in"
         elif word.endswith("en"):
@@ -161,7 +152,6 @@ class GenderInator:
         self.suggestions_collection.insert_one(text)
 
     def main_function(self, text):
-        gender_dict = self.load_gender_dictionary('gender_tabelle.xlsx')
         result = []
         for token in text.split():
             token = self.filter_non_letters(token)
@@ -178,8 +168,6 @@ class GenderInator:
                     result_word = self.check_wordending(token)
                     if result_word is not None:
                         result.append(result_word)
-
-        print(result)
         return result
 
     def upload_excel(self, dict_array):
@@ -214,7 +202,6 @@ class GenderInator:
         for item in result:
             word = list(item.keys())[0]
             alternative = list(item.values())[0]
-            print("This is the word", word, "This is the alternative", alternative)
             if alternative is not None:
                 if isinstance(alternative, list):
                     alternative = alternative[0]
