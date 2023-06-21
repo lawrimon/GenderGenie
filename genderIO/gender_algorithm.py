@@ -75,7 +75,7 @@ class GenderInator:
         document = self.feedback_collection.find_one({"word": word})
         try:
             if document:
-                definition = document["definition"]
+                definition = document["word"]
                 return definition
             else:
                 return None
@@ -93,7 +93,13 @@ class GenderInator:
         try:
             if token.pos_ == "NOUN":
                 if word.endswith("er"):
-                    return {word: word + "*in"}
+                    print(token.tag_)
+                    if "PLURAL" in token.tag_:
+                        print("NIEMALS")
+                        return {word: word + "*innen"}
+
+                    else:
+                        return {word: word + "*in"}
         except:
             pass
 
@@ -108,6 +114,40 @@ class GenderInator:
         else:
             return None
         return word
+    
+    def get_collection_data(self, collection_name):
+        collection = self.db[collection_name]
+        documents = list(collection.find({}, {"_id": 0}))  # Exclude the _id field
+        print("These are the documents:")
+        for document in documents:
+            print(document)
+        return documents
+    
+    def delete_document(self,collection_name, value):
+        # Get the collection based on the provided collection name
+        collection = self.db[collection_name]
+        
+        # Find and delete the document with the specified value
+        collection.delete_many({"word": value})
+
+
+    def approve_document(self,collection_name, value):
+        # Get the source collection based on the provided collection name
+        source_collection = self.db[collection_name]
+        
+        # Get the target collection (GenderRegeln)
+        target_collection = self.db['GenderRegeln']
+        
+        # Find the document with the specified value in the source collection
+        document = source_collection.find_one({"word": value})
+        
+        if document:
+            # Move the document to the target collection
+            target_collection.insert_one(document)
+            
+            # Delete the document from the source collection
+            source_collection.delete_one({"value": value})
+
 
     def replace_token_pl(self, word):
         if word.endswith("er"):
