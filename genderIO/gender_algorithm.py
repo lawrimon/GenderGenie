@@ -75,7 +75,7 @@ class GenderInator:
         document = self.feedback_collection.find_one({"word": word})
         try:
             if document:
-                definition = document["definition"]
+                definition = document["word"]
                 return definition
             else:
                 return None
