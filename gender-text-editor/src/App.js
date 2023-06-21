@@ -12,6 +12,8 @@ const App = () => {
   const [highlightWords, setHighlightWords] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
   const [keyvalues, setKeyValues] = useState([]);
+  const [changedValues, setChangedValues] = useState([]);
+
 
   const [selectedKeyword, setSelectedKeyword] = useState('');
   const [selectedValue, setSelectedValue] = useState('');
@@ -45,6 +47,11 @@ const App = () => {
   const handleTextChange = (event) => {
     setText(event.target.value);
     console.log(text, "ist event change")
+  };
+
+  // Function to add a word to the array
+  const addWordToArray = (word) => {
+    setChangedValues((prevValues) => [...prevValues, { 'key': word}]);
   };
 
   const handleSubmit = () => {
@@ -145,11 +152,12 @@ const App = () => {
 
   const handleWordClick = word => {
     console.log(word);
+    console.log("CLICCCCCKED")
     console.log(selectedKeyword);
     setText(prevText => {
       let newText = prevText;
       while (newText.includes(selectedKeyword)) {
-        newText = newText.replace(selectedKeyword, word);
+        newText = newText.replace(selectedKeyword, word.trim());
       }
       return newText;
     });
@@ -163,8 +171,11 @@ const App = () => {
       }
     });
     console.log(keyvalues);
+    console.log("the added word",word.trim())
+    addWordToArray(word.trim());
     setKeyValues(newKeyValues);
     console.log(keyvalues);
+    console.log(changedValues)
   };
   
 
@@ -198,12 +209,14 @@ const App = () => {
 
   const highlight = (text, words, handleClick) => {
     let result = [text];
-    words.forEach(word => {
+    const allWords = [...(words || []), ...(changedValues || [])]; // Combine words and changedValues arrays
+    console.log("these are all words", allWords)
+    
+    allWords.forEach(word => {
       result = result.flatMap(item => {
         if (typeof item === "string") {
           const regex = new RegExp(`\\b${word.key}\\b`, 'g');
-          const matches = item.matchAll(regex);
-  
+          const matches = Array.from(item.matchAll(regex)); // Convert matches iterator to an array
           let lastIndex = 0;
           const highlightedItems = [];
           for (const match of matches) {
@@ -211,8 +224,26 @@ const App = () => {
             const endIndex = startIndex + word.key.length;
   
             highlightedItems.push(item.slice(lastIndex, startIndex));
+            console.log(allWords, "allwords")
+            const isChanged = changedValues.includes(word);
+            console.log(isChanged, "isChanged", item.key, word.key, allWords, changedValues)
+
+            const spanStyle = {
+              color: isChanged ? 'green' : 'red',
+              cursor: 'pointer'
+            };
+  
+            if (isChanged && spanStyle.color === 'green') {
+              console.log('Color is green!');
+              console.log(word, "should be green");
+            }
+  
             highlightedItems.push(
-              <span key={`${word.key}-${startIndex}`} style={{ color: 'red', cursor: 'pointer' }} onClick={() => handleClick(word.key, word.value)}>
+              <span
+                key={`${word.key}-${startIndex}`}
+                style={spanStyle}
+                onClick={() => handleClick(word.key, word.value)}
+              >
                 {item.slice(startIndex, endIndex)}
               </span>
             );
@@ -227,8 +258,13 @@ const App = () => {
         }
       });
     });
+  
     return result;
   };
+  
+  
+  
+  
   
 
   const highlight_keyword = (text, word) => {
