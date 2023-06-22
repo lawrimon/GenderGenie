@@ -171,9 +171,10 @@ class GenderInator:
             print("Alpha:", token.is_alpha)
             print("Stop:", token.is_stop)
             try:
-                print("Number:", token.tag_)
+                print("Number:", token.tag_, token.number)
                 if "PLURAL" in token.tag_:
                     print("NIEMALS")
+                    
             except:
                 pass
             print("\n")
@@ -218,7 +219,6 @@ class GenderInator:
         return [x for x in lst if x not in elements]
 
     def instant_conversion(self, text):
-        gender_dict = self.load_gender_dictionary('gender_tabelle.xlsx')
         result = []
         for token in text.split():
             token = self.filter_non_letters(token)
@@ -230,8 +230,8 @@ class GenderInator:
                 if result_word is not None:
                     result.append(result_word)
 
-            if token in gender_dict:
-                alternatives = gender_dict[token].split(';')
+            if token in result:
+                alternatives = result[token].split(';')
                 if alternatives:
                     result.append({token: alternatives[0]})
                 else:

@@ -10,6 +10,7 @@ const LoadingBar = () => {
     const [filename, setFilename] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [fileSize, setfileSize] = useState(false);
 
   let text = "";
 
@@ -30,6 +31,9 @@ const handleUploadConversion = (event) => {
       // call the handleSubmit function
       console.log(text, "is the text")
     };
+    setfileSize(document.getElementById("conversion-input").files[0].size);
+    
+    console.log("File size:", fileSize);
 
     // start reading the file as text
     reader.readAsText(file);
@@ -75,6 +79,10 @@ function downloadTextFile(content, filename) {
     setIsLoading(true);
     setShowSuccessMessage(false);
     handleSubmit();
+    setfileSize(document.getElementById("conversion-input").files[0].size);
+    
+    console.log("File size:", fileSize);
+
 
     // Simulate a loading effect
     setTimeout(() => {
@@ -84,8 +92,8 @@ function downloadTextFile(content, filename) {
       // Hide the success message after 10 seconds
       setTimeout(() => {
         setShowSuccessMessage(false);
-      }, 10000);
-    }, 6000); // Reduced the loading time for demonstration purposes
+      }, 4000);
+    }, (fileSize * 10)); // Reduced the loading time for demonstration purposes
   };
 
   useEffect(() => {
@@ -105,13 +113,15 @@ function downloadTextFile(content, filename) {
         <label htmlFor="conversion-input" className="apple-btn">
         Select .txt file
         </label>
-        <input type="file" id="conversion-input" accept=".txt" onChange={handleUploadConversion} />
+        <input type="file" id="conversion-input" accept=".txt , .tex" onChange={handleUploadConversion} />
 
       </div>
       )}
       {isLoading && (
         <div className="loading-bar-container">
-          <div className="loading-bar"></div>
+          <div className="loading-bar"
+          style={{ animation: `loading-animation ${fileSize / 120}s linear forwards` }}>
+            </div>
         </div>
       )}
       {showSuccessMessage && (
